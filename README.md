@@ -6,6 +6,6 @@ This folder will be where you complete your pre-class each week. The first time 
 Before you continue, Edit this document with:
 
 
-- Preferred Name: _Shuai Xie________________________________
+- Preferred Name: _Shuai________________________________
 - Brown Name: ____Shuai Xie_______________________
 - Brown E-mail: ___shuai_xie@brown.edu___________________
