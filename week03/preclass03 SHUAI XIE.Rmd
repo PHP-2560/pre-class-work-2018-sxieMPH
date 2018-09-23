@@ -1,0 +1,79 @@
+```{r}
+install.packages("gapminder")
+library(dplyr)
+library(gapminder)
+gapminder
+```
+
+1.How many unique countries are represented per continent?
+```{r}
+cperc=gapminder %>%
+  group_by(continent)%>%
+  count()
+```
+2.Which European nation had the lowest GDP per capita in 1997?
+```{r}
+GDP_europe=gapminder %>%
+  filter(continent=="Europe",year==1997,gdpPercap==min(gdpPercap))%>%
+```
+3.According to the data available, what was the average life expectancy across each continent in the 1980s?
+```{r}
+life=gapminder %>%
+  group_by(continent)%>%
+  filter(year>1980,year<1990)%>%
+  summarize(average_life_expectancy=mean(lifeExp))
+```
+4.What 5 countries have the highest total GDP over all years combined?
+```{r}
+GDP_high=gapminder %>%
+  group_by(country)%>%
+  summarize(total_GDP=sum(gdpPercap*pop))%>%
+  arrange(desc(total_GDP))%>%
+  head(5)
+```
+5.What countries and years had life expectancies of at least 80 years? N.b. only output the columns of interest: country, life expectancy and year (in that order).
+```{r}
+life80=gapminder %>%
+  group_by(country)%>%
+  filter(lifeExp>=80) %>%
+  select(country,lifeExp,year)
+```
+6.What 10 countries have the strongest correlation (in either direction) between life expectancy and per capita GDP?
+```{r}
+correlation=gapminder %>%
+  group_by(country)%>%
+  summarize(correlation=cor(lifeExp,gdpPercap))%>%
+  arrange(correlation)%>%
+  head(10)
+```
+7.Which combinations of continent (besides Asia) and year have the highest average population across all countries? N.b. your output should include all results sorted by highest average population. With what you already know, this one may stump you. See this Q&A for how to ungroup before arrangeing. This also behaves differently in more recent versions of dplyr.
+```{r}
+population=gapminder %>%
+  group_by(continent,year)%>%
+  filter(continent !="Asia")%>%
+  summarise(average_population = mean(pop)) %>%
+  arrange(desc(average_population))
+  
+```
+8.Which three countries have had the most consistent population estimates (i.e. lowest standard deviation) across the years of available data?
+```{r}
+lowsd=gapminder %>%
+  group_by(country)%>%
+  summarize(sd=sd(pop))%>%
+  arrange(sd)%>%
+  head(3)
+
+```
+9.Subset gm to only include observations from 1992 and store the results as gm1992. What kind of object is this?
+```{r}
+gm1992=gapminder %>%
+  filter(year>=1992)
+class(gm1992)
+```
+10.Which observations indicate that the population of a country has decreased from the previous year and the life expectancy has increased from the previous year? See the vignette on window functions.
+```{r}
+population_change=gapminder %>%
+  group_by(country) %>%
+   filter(pop<lag(pop),lifeExp>lag(lifeExp))%>%
+   filter(n_distinct(year)>1)
+```
