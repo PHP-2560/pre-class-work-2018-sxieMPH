@@ -30,7 +30,6 @@ print(s)
 # for any i between 1 to 1000, it will add i to the s. for example, for i=0 s=0; for i =1, s=0+1=1; fori=2, s=1+2=3; for i=3,s=3+3=6; it will be done when i=1000. The loop does not include i=1001, so the summation is done for i=1000.
 ```
 
-# for any i between 1 to 1000, it will add i to the s. for example, for i=0 s=0; for i =1, s=0+1=1; fori=2, s=1+2=3; for i=3,s=3+3=6; it will be done when i=1000. The loop does not include i=1001, so the summation is done for i=1000.
 
 
 B. Now, add all the EVEN integers between 0 and 1000 (hint: use seq())
