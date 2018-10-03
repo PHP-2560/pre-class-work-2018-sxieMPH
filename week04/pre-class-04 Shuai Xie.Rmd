@@ -1,0 +1,122 @@
+# pre-class
+
+
+Make sure you commit this often with meaningful messages. 
+
+
+
+
+### Question 1:
+
+Using a loop, print the integers from 1 to 50. 
+```{r}
+for (i in 1:50){
+  print(i)
+}
+```
+# any i between 1 to 50 will be printed. For example, for i=1 it will do the print function; for i=2 it will do the print functiion; The loop does not include i=51, so the print function stop.
+
+
+### Question 2:
+
+A.  Using a loop, add all the integers between 0 and 1000.
+```{r}
+s=0
+for (i in 0:1000){
+  s=s+i
+}
+print(s)
+```
+
+# for any i between 1 to 1000, it will add i to the s. for example, for i=0 s=0; for i =1, s=0+1=1; fori=2, s=1+2=3; for i=3,s=3+3=6; it will be done when i=1000. The loop does not include i=1001, so the summation is done for i=1000.
+
+
+B. Now, add all the EVEN integers between 0 and 1000 (hint: use seq())
+```{r}
+s=0
+for (i in seq(0,1000,by=2)){
+  s=s+i
+  }
+print(s)
+```
+# for any even integers i  between 1 to 1000, it will add i to the s. for example, for i=0 s=0; for i =2, s=0+2=2; fori=4, s=4+2=6; for i=6,s=6+6=12; it will be done when i=1000. The loop does not include i=1002, so the summation is done for i=1000.
+
+
+
+
+C. Now, repeat A and B WITHOUT using a loop.
+```{r}
+print(sum(c(0:1000)))
+# get a sequence from 0 to 1000, and use sum to add all the numbers in the sequence, and then print the number#
+print(sum(seq(0,1000,by=2)))
+# get a sequence of even integers from 0 to 1000, and use sum to add all the even numbers in the sequence, and then print the number#
+```
+
+
+### Question 3:
+
+Here is a dataframe of survey data containing 5 questions :
+
+```{r, eval=FALSE}
+survey <- data.frame(
+                     "participant" = c(1, 2, 3, 4, 5, 6),
+                     "q1" = c(5, 3, 2, 7, 11, 0),
+                     "q2" = c(4, 2, 2, 5, -10, 99),
+                     "q3" = c(-4, -3, 4, 2, 9, 10),
+                     "q4" = c(-30, 5, 2, 23, 4, 2),
+                     "q5" = c(88, 4, -20, 2, 4, 2)
+                     )
+```
+The response to each question should be an integer between 1 and 5. Obviously, we have some bad values in the dataframe. The goal of this problem is to fix them.
+
+A. Using a loop, create a new dataframe called survey.clean where all the invalid values (those that are not integers between 1 and 5) are set to NA.
+```{r}
+survey <- data.frame(
+                     "participant" = c(1, 2, 3, 4, 5, 6),
+                     "q1" = c(5, 3, 2, 7, 11, 0),
+                     "q2" = c(4, 2, 2, 5, -10, 99),
+                     "q3" = c(-4, -3, 4, 2, 9, 10),
+                     "q4" = c(-30, 5, 2, 23, 4, 2),
+                     "q5" = c(88, 4, -20, 2, 4, 2)
+                     )
+for(i in 1:6){ # it has six rows in the dataframe
+  for(j in 1:6){ # it has six column in the dataframe
+    if(survey[i,j]<1 |survey[i,j]>5){ # if the number in the cell is smaller than 1 or the number in the cell is larger than 5
+    survey[i,j]=NA # it will be replaced by NA, if the number in the cell is between 1 to 5 (include 1 and 5), it will not be replaced.
+    } 
+ }
+}
+
+```
+
+B. Now, again using a loop, add a new column to the dataframe called “invalid.answers” that indicates, for each participant, how many bad answers they gave.
+
+```{r}
+library(dplyr)
+survey <- data.frame(
+                     "participant" = c(1, 2, 3, 4, 5, 6),
+                     "q1" = c(5, 3, 2, 7, 11, 0),
+                     "q2" = c(4, 2, 2, 5, -10, 99),
+                     "q3" = c(-4, -3, 4, 2, 9, 10),
+                     "q4" = c(-30, 5, 2, 23, 4, 2),
+                     "q5" = c(88, 4, -20, 2, 4, 2))
+
+for(i in 1:6){# it has six rows in the dataframe
+  for(j in 1:6){# it has six column in the dataframe
+    if(survey[i,j]<1 |survey[i,j]>5){# if the number in the cell is smaller than 1 or the number in the cell is larger than 5
+    survey[i,j]=NA# it will be replaced by NA, if the number in the cell is between 1 to 5 (include 1 and 5), it will not be replaced.
+    } 
+    survey$invalid.answers <- apply(is.na(survey), 1, sum) # after all the numbers in the cell between 1 and 5 (include 1 and 5), create a new column in the data frame called "invalid.answers" and the numbers in each cell means how many NA in its row.
+
+  }
+  
+}
+
+
+```
+
+
+
+
+
+
