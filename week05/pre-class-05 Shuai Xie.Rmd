@@ -77,7 +77,7 @@ B. Now do the same thing, but now don't use a loop
 ```{r}
 library(dplyr)
 WCGS2B=wcgs%>%
-  select(id,weight,typchd69)%>%
+  select(weight,typchd69)%>%
   group_by(typchd69)%>%
   summarize(mean=mean(weight))
 ```
