@@ -1,0 +1,84 @@
+```{r}
+suppressMessages(library(foreign))
+wcgs <- read.dta("https://drive.google.com/uc?export=download&id=0B8CsRLdwqzbzYWxfN3ExQllBQkU")
+```
+
+
+
+Question 1: Standardize Function
+
+A. Create a function called standardize.me() that takes a numeric vector as an argument, and returns the standardized version of the vector. 
+
+
+
+```{r}
+standardize.me <- function(x) { # creat a function called standardize.me
+  
+  standardized <- (x - mean(x,na.rm=TRUE)) / sd(x,na.rm=TRUE) #Standardizing a variable means subtracting the mean(non-NA value), and then dividing by the standard deviation(non-NA value). 
+  return(standardized) # return the result
+  
+}
+```
+
+B. Assign all the numeric columns of the original WCGS dataset to a new dataset called WCGS.new. 
+
+
+```{r}
+columns <- c(1, 2, 3, 4, 5, 6, 7, 9, 13, 15, 16)# find the numeric columns
+WCGS.new <- wcgs[, columns] # assign them to the WCGS.new
+
+```
+
+
+C. Using a loop and your new function, standardize all the variables WCGS.new dataset.
+```{r}
+for (i in 1:ncol(WCGS.new)){
+  
+  WCGS.new[,i]=standardize.me(WCGS.new[,i]) # call the function.
+}
+```
+
+D. What should the mean and standard deviation of all your new standardized variables be? Test your prediction by running a loop
+
+mean=0
+standard deveation=1
+
+
+```{r}
+WCGS.new_sd=matrix(ncol=ncol(WCGS.new),nrow=1) # creat a new matrix to store the standard devation for the new standardized variables
+WCGS.new_mean=matrix(ncol=ncol(WCGS.new),nrow=1)# creat a new matrix to store the mean for the new standardized variables
+for (i in 1:ncol(WCGS.new)){
+  
+ WCGS.new_mean[1,i]=round(mean(WCGS.new[,i],na.rm=TRUE),2) # calculate the mean for the standardized columns
+ WCGS.new_sd[1,i]=sd(WCGS.new[,i],na.rm=TRUE) # calculate the standard deviation for the standardized columns
+ 
+}
+```
+
+Question 2: Looping to Calculate
+
+A. Using a loop, calculate the mean weight of the subjects separated by the type of CHD they have. 
+
+```{r}
+WCGS2A= data.frame("typchd69" = unique(wcgs$typchd69), "weight"=NA) # create a dataframe, which includes two columns, typchd69 and weight.
+
+for(i in 1:4) { # because there are four rows, so the i from 1 to 4
+  a= WCGS2A$typchd69[i] # assign a to each unique value of typchd69
+
+  WCGS2A$weight[i]=mean(subset(wcgs, typchd69 ==a)$weight) # find the mean of the weight when the typchd69 equals each unique value
+ }
+ 
+ 
+ 
+ 
+```
+
+B. Now do the same thing, but now don't use a loop
+```{r}
+library(dplyr)
+WCGS2B=wcgs%>%
+  select(id,weight,typchd69)%>%
+  group_by(typchd69)%>%
+  summarize(mean=mean(weight))
+```
+
