@@ -62,7 +62,7 @@ A. Using a loop, calculate the mean weight of the subjects separated by the type
 ```{r}
 WCGS2A= data.frame("typchd69" = unique(wcgs$typchd69), "weight"=NA) # create a dataframe, which includes two columns, typchd69 and weight.
 
-for(i in 1:4) { # because there are four rows, so the i from 1 to 4
+for(i in 1:4) { # because there are four rows, the i from 1 to 4
   a= WCGS2A$typchd69[i] # assign a to each unique value of typchd69
 
   WCGS2A$weight[i]=mean(subset(wcgs, typchd69 ==a)$weight) # find the mean of the weight when the typchd69 equals each unique value
