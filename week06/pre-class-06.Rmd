@@ -1,0 +1,80 @@
+# pre-class
+
+
+Make sure you commit this often with meaningful messages. 
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+1. Read the source code for each of the following three functions, puzzle out what they do, and then brainstorm better names.
+```{r}
+f1 <- function(string, prefix) {
+  
+  substr(string, 1, nchar(prefix)) == prefix
+  
+}
+
+x <- c("asfef", "jfwioajf", "asf[d", "werewasf", "stuff.blash") #test the function
+substr(x, 1, nchar("asf"))
+f1(x, "asf")
+```
+example shows that the substr is trying to extract the first three letters, because the prefix has three letters, from each element. If the extracted letters equal to the prefix, it would return TRUE,or it returns FALSE. Therefore it could be called "begin_prefix"
+```{r}
+
+f2 <- function(x) {
+  if (length(x) <= 1) return(NULL)
+  x[-length(x)]
+}
+ #test the function
+f2(c(1:20))
+
+```
+before the function x=1:20, after the function x=1:19.
+the function will drop the last element from x
+```{r}
+f3 <- function(x, y) {
+  rep(y, length.out = length(x))
+}
+f3(1:2,9) # test exmple
+```
+the function calculates the length of x and uses this number to repeat the value of y.
+
+```{r}
+begin_prefix<- function(string, prefix) {
+  substr(string, 1, nchar(prefix)) == prefix
+}
+drop_last <- function(x) {
+  if (length(x) <= 1) return(NULL)
+  x[-length(x)]
+}
+repeat_y_x <- function(x, y) {
+  rep(y, length.out = length(x))
+}
+```
+
+2. Compare and contrast rnorm() and MASS::mvrnorm(). How could you make them more consistent?
+
+
+3. Use `lapply()` and an anonymous function to find the coefficient of variation (the standard deviation divided by the mean) for all columns in the mtcars dataset. 
+```{r}
+mtcars # the database
+lapply(mtcars, function(x) sd(x)/mean(x)) # use lapply to calcualte the coefficient
+```
+
+
+4. Use vapply() to:
+    a. Compute the standard deviation of every column in a numeric data frame.
+    b. Compute the standard deviation of every numeric column in a mixed data frame. (Hint: you’ll need to use vapply() twice.)
+```{r}
+
+df1=data.frame("A" = 1:5, "B" = c(21,15,18,19,25))
+df1
+df2=data.frame("A" = 1:5, "B" = c(21,15,18,19,25),"C" = c("J","D","T","L","C"))
+df2
+vapply(df1,sd,numeric(1)) # calculate the sd by vapply
+vapply(df2[vapply(df2, is.numeric, logical(1))],sd,numeric(1)) # find the numeric column firstly, then calculate the sd.
+```
