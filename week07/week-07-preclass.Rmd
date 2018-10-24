@@ -33,116 +33,80 @@ With this project we will simulate a famoues probability problem. This will not 
     a. the probability that you have "busted" (lost all your money) by the time you have placed your one hundredth bet. 
 ```{r}
 
-gambler_ruin=function(bankroll,bet,p0)
-{
-  k=0
-  p=p0
-  while (bankroll>=bet & k<=100){
+gambler_ruin=function(bankroll,bet,k0) # creat a function, with input bankroll, bet and number of hands
+{ 
+  k=0 # at the begining the count of hand is 0
+  while (bankroll>=bet & k<k0){# if bankroll larger or equal to bet, which means the gambler has money to gamble, and the count of hand is smaller than the max hand he could have, then do the loop, or stop
    
-    p1=runif(1)
-    if(p1>=p)
+    if(rbinom(1, 1, 0.5) == 1) # generate a number which 50% could be 1, 50% could be 0. If it is 1, then the gambler wins and get bet back and get extra money which equals to bet
     {
       bankroll = bankroll+bet
-      bet=bet+0.01*bankroll
       
     }else{
-      bankroll = bankroll-bet
-      # if (bankroll<bet){bet=bankroll}
+      bankroll = bankroll-bet # if the number is not 1, which means the gambler loses, then the bankroll will lose the bet.
       }
-    k=k+1
+    k=k+1 # the count of hand plus 1, when one hand done.
     
   
   }
-  return(bankroll)
+  return(c(bankroll,k)) # return how much bankroll the gambler gets and how many counts of hand he does. if the bankroll equals 0, which means he go bust and we want to know after how many hands, he goes bust. if the bankroll does not equal to 0, which means he does not go bust, and we want to know how much money he gets finally after the maxi hands.
 }
-gambler_ruin(1000,100,0.5)
-a=replicate(5000, gambler_ruin(1000,100,0.5))
-b=sum(a==0)/100
-b
+
+a100=replicate(5000, gambler_ruin(1000,100,100)) # when the gambler plays 100 hands (maximum), the money and the hands he could did. then we simulate it 5000 times
+b100=sum(a100[1,]==0)/5000 # when the bankroll equals zero, which means the gambler goes bust, we count how many times this happened in the simulation and divide it by 5000 to get the possiblity
+b100
+
 ```
 
 b. the probability that you have busted by the time you have placed your five hundredth bet by simulating the outcome directly. 
 ```{r}
-
-gambler_ruin=function(bankroll,bet,p0)
-{
-  k=0
-  p=p0
-  while (bankroll>=bet & k<= 500){
-   
-    p1=runif(1)
-    if(p1>=p)
-    {
-      bankroll = bankroll+bet
-      bet=bet+0.05*bankroll
-      
-    }else{
-      bankroll = bankroll-bet
-      # if (bankroll<bet){bet=bankroll}
-      }
-    k=k+1
-    
-  
-  }
-  return(bankroll)
-}
-a=replicate(5000, gambler_ruin(1000,100,0.5))
-
-b=sum(a==0)/500
-b
-c=mean(a==0)
-c
-d1=mean()
-d2=var()
-e1=mean()
-e2=var()
+a500=replicate(5000, gambler_ruin(1000,100,500))# when the gambler plays 500 hands (maximum), the money and the hands he could did. then we simulate it 5000 times
+b500=sum(a500[1,]==0)/5000# when the bankroll equals zero, which means the gambler goes bust, we count how many times this happened in the simulation and divide it by 5000 to get the possiblity
+b500
 ```    
     c. the mean time you go bust, given that you go bust within the first 5000 hands.
+```{r}
+c500=numeric() # creat a vector 
+c100=numeric() # creat a vector
+for (i in 1:5000){ #5000 simulations
+  if (a500[1,i]==0){ # if the bankroll equals to 0, which means he goes bust, then add the hands, he did to a the vector
+   c500=c(c500, a500[2,i])
+ }
+}
+for (i in 1:5000){# if the bankroll equals to 0, which means he goes bust, then add the hands, he did to a the vector
+  if (a100[1,i]==0){
+   c100=c(c100, a100[2,i])
+ }
+}
+ 
+c100_mean=mean(c100) # calucalte the mean of the hands
+c500_mean=mean(c500)# calucalte the mean of the hands
+
+c100_mean
+c500_mean
+
+```
+    
     d. the mean and variance of your bankroll after 100 hands (including busts).
-    e. the mean and variance of your bankroll after 500 hands (including busts).
+   
 ```{r}
 
-gambler_ruin=function(bankroll,bet,p0)
-{
-  k=0
-  p=p0
-  after100=numeric()
-  after500=numeric()
-  while (bankroll>=bet & k<= 500){
-   
-    p1=runif(1)
-    if(p1>=p)
-    {
-      bankroll = bankroll+bet
-      bet=bet+0.05*bankroll
-      
-    }else{
-      bankroll = bankroll-bet
-      # if (bankroll<bet){bet=bankroll}
-      }
-    k=k+1
-    if (k>100){after100=c(after100,bankroll)}
-    else if (k>500){after500=c(after500,bankroll)}
-  
-  }
-  return(bankroll)
-  return (after100)
-  return(after500)
-}
-a=replicate(5000, gambler_ruin(1000,100,0.5))
-
-b=sum(a==0)/500
-b
-c=mean(a==0)
-c
-d1=mean(after100)
-d2=var(after100)
-e1=mean(after500)
-e2=var(after500)
+d_mean=mean(a100[1,]) #the mean of your bankroll after 100 hands
+d_var=var(a100[1,])# the variance of your bankroll after 100 hands
+d_mean
+d_var
 ```     
+ e. the mean and variance of your bankroll after 500 hands (including busts).
+```{r}
+e_mean=mean(a500[1,])#the mean of your bankroll after 500 hands
+e_var=var(a500[1,])# the variance of your bankroll after 500 hands
+e_mean
+e_var
+```
+
 Note: you *must* stop playing if your player has gone bust. How will you handle this in the `for` loop?
 
-for (bet<bankroll){}
+
 
 2. **Markov Chains**. Suppose you have a game where the probability of winning on your first hand is 48%; each time you win, that probability goes up by one percentage point for the next game (to a maximum of 100%, where it must stay), and each time you lose, it goes back down to 48%. Assume you cannot go bust and that the size of your wager is a constant $100.
 
