@@ -1,0 +1,221 @@
+---
+title: "Simulations Pre-Class Project"
+date: "Due March 13, 2017 at 5:00pm"
+output:
+  html_document
+
+
+---
+
+<style type="text/css">
+.table {
+
+    width: 80%;
+    margin-left:10%; 
+    margin-right:10%;
+}
+</style>
+```{r,setup, echo=FALSE, cache=TRUE}
+## numbers >= 10^5 will be denoted in scientific notation,
+## and rounded to 2 digits
+options(scipen = 3, digits = 3)
+```
+
+
+
+
+#Project Goals:
+
+
+With this project we will simulate a famoues probability problem. This will not require knowledge of probability or statistics but only the logic to follow the steps in order to simulate this problem. This is one way to solve problems by using the computer. 
+
+ 1. **Gambler's Ruin**: Suppose you have a bankroll of $1000 and make bets of $100 on a fair game. By simulating the outcome directly for at most 5000 iterations of the game (or hands), estimate:
+    a. the probability that you have "busted" (lost all your money) by the time you have placed your one hundredth bet. 
+```{r}
+
+gambler_ruin=function(bankroll,bet,p0)
+{
+  k=0
+  p=p0
+  while (bankroll>=bet & k<=100){
+   
+    p1=runif(1)
+    if(p1>=p)
+    {
+      bankroll = bankroll+bet
+      bet=bet+0.01*bankroll
+      
+    }else{
+      bankroll = bankroll-bet
+      # if (bankroll<bet){bet=bankroll}
+      }
+    k=k+1
+    
+  
+  }
+  return(bankroll)
+}
+gambler_ruin(1000,100,0.5)
+a=replicate(5000, gambler_ruin(1000,100,0.5))
+b=sum(a==0)/100
+b
+```
+
+b. the probability that you have busted by the time you have placed your five hundredth bet by simulating the outcome directly. 
+```{r}
+
+gambler_ruin=function(bankroll,bet,p0)
+{
+  k=0
+  p=p0
+  while (bankroll>=bet & k<= 500){
+   
+    p1=runif(1)
+    if(p1>=p)
+    {
+      bankroll = bankroll+bet
+      bet=bet+0.05*bankroll
+      
+    }else{
+      bankroll = bankroll-bet
+      # if (bankroll<bet){bet=bankroll}
+      }
+    k=k+1
+    
+  
+  }
+  return(bankroll)
+}
+a=replicate(5000, gambler_ruin(1000,100,0.5))
+
+b=sum(a==0)/500
+b
+c=mean(a==0)
+c
+d1=mean()
+d2=var()
+e1=mean()
+e2=var()
+```    
+    c. the mean time you go bust, given that you go bust within the first 5000 hands.
+    d. the mean and variance of your bankroll after 100 hands (including busts).
+    e. the mean and variance of your bankroll after 500 hands (including busts).
+```{r}
+
+gambler_ruin=function(bankroll,bet,p0)
+{
+  k=0
+  p=p0
+  after100=numeric()
+  after500=numeric()
+  while (bankroll>=bet & k<= 500){
+   
+    p1=runif(1)
+    if(p1>=p)
+    {
+      bankroll = bankroll+bet
+      bet=bet+0.05*bankroll
+      
+    }else{
+      bankroll = bankroll-bet
+      # if (bankroll<bet){bet=bankroll}
+      }
+    k=k+1
+    if (k>100){after100=c(after100,bankroll)}
+    else if (k>500){after500=c(after500,bankroll)}
+  
+  }
+  return(bankroll)
+  return (after100)
+  return(after500)
+}
+a=replicate(5000, gambler_ruin(1000,100,0.5))
+
+b=sum(a==0)/500
+b
+c=mean(a==0)
+c
+d1=mean(after100)
+d2=var(after100)
+e1=mean(after500)
+e2=var(after500)
+```     
+Note: you *must* stop playing if your player has gone bust. How will you handle this in the `for` loop?
+
+for (bet<bankroll){}
+
+2. **Markov Chains**. Suppose you have a game where the probability of winning on your first hand is 48%; each time you win, that probability goes up by one percentage point for the next game (to a maximum of 100%, where it must stay), and each time you lose, it goes back down to 48%. Assume you cannot go bust and that the size of your wager is a constant $100.
+
+```{r}
+
+Markov_Chains=function(money,p0)
+{
+  k=0
+  p=p0
+  while (money>=100 & k<= 100000){
+   
+    p1=runif(1)
+    if(p1>=p)
+    {
+      money = money+100
+      p = p+0.01
+      if(p>1){p=1}
+    }else{
+      money = money-100
+      p = p0}
+    k=k+1
+  
+  }
+  return(money)
+}
+Markov_Chains(100,0.48)
+
+a=replicate(100, Markov_Chains(100,0.48))
+a
+mean(a)
+```
+
+
+
+
+
+
+    a. Is this a fair game? Simulate one hundred thousand sequential hands to determine the size of your return. Then repeat this simulation 99 more times to get a range of values to calculate the expectation.
+It is not a fair game, the problity of winning is never less than 0.48 which makes the gambler contiously winning harder. and from the simulation the expecation may not be zero, but most times in the repetited 100 times, the gambler will lose all his money.
+
+    b. Repeat this process but change the starting probability to a new value within 2% either way. Get the expected return after 100 repetitions. Keep exploring until you have a return value that is as fair as you can make it. Can you do this automatically?
+    
+    
+```{r}
+
+set.seed(1)
+fair=matrix( nrow = 2, ncol = 41)
+
+for (i in 0:40){
+  fair[1,i+1]=(0.46+0.001*i)
+  fair[2,i+1]= mean(replicate(100, Markov_Chains(100,0.46+0.001*i)))
+}
+  fair
+  
+```
+    c. Repeat again, keeping the initial probability at 48%, but this time change the probability increment to a value different from 1%. Get the expected return after 100 repetitions. Keep changing this value until you have a return value that is as fair as you can make it. 
+
+```{r}
+
+set.seed(1)
+fair=matrix( nrow = 2, ncol = 53)
+
+for (i in 0:52){
+  fair[1,i+1]=(0.48+0.01*i)
+  fair[2,i+1]= mean(replicate(100, Markov_Chains(100,0.46+0.01*i)))
+}
+  fair
+  
+```    
+    
+    
+    
+    
+    
+    
+    
