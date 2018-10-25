@@ -1,10 +1,9 @@
 ---
 title: "Simulations Pre-Class Project"
-date: "Due March 13, 2017 at 5:00pm"
 output:
-  html_document
-
-
+  html_document: default
+  pdf_document: default
+date: "Due March 13, 2017 at 5:00pm"
 ---
 
 <style type="text/css">
@@ -112,31 +111,30 @@ Note: you *must* stop playing if your player has gone bust. How will you handle 
 
 ```{r}
 
-Markov_Chains=function(money,p0)
+Markov_Chains=function(money,p0,increase)
 {
-  k=0
-  p=p0
-  while (money>=100 & k<= 100000){
+  k=0 # count =0 at the beginning
+  p=p0 # intinal possiblity
+  while (money>=100 & k<= 100000){ # the money has be more than wager to gamble, it has to be less than 100000 hands
    
-    p1=runif(1)
-    if(p1>=p)
+    
+    if(rbinom(1, 1, p) == 1) # the probility of winning is p
     {
-      money = money+100
-      p = p+0.01
-      if(p>1){p=1}
+      money = money+100 # if he wins, he get $100 more
+      p = p+increase # if he wins ,the possiblity of winning next time increases 1%
+      if(p>=1){p=1} # the possiblity could not be more than 1
     }else{
-      money = money-100
+      money = money-100 # if he loses, he will lose the wager $100
       p = p0}
-    k=k+1
+    k=k+1 # count plus 1
   
   }
   return(money)
 }
-Markov_Chains(100,0.48)
 
-a=replicate(100, Markov_Chains(100,0.48))
+a=replicate(100, Markov_Chains(500000,0.48,0.01)) # repeat 100 times
 a
-mean(a)
+mean(a) # mean of the final result
 ```
 
 
@@ -145,37 +143,64 @@ mean(a)
 
 
     a. Is this a fair game? Simulate one hundred thousand sequential hands to determine the size of your return. Then repeat this simulation 99 more times to get a range of values to calculate the expectation.
-It is not a fair game, the problity of winning is never less than 0.48 which makes the gambler contiously winning harder. and from the simulation the expecation may not be zero, but most times in the repetited 100 times, the gambler will lose all his money.
-
+It is not a fair game. from the simulation , the gambler's money is always less than the inital value,(less than 500000). Therefore it is not a fair game.
     b. Repeat this process but change the starting probability to a new value within 2% either way. Get the expected return after 100 repetitions. Keep exploring until you have a return value that is as fair as you can make it. Can you do this automatically?
     
     
 ```{r}
 
 set.seed(1)
-fair=matrix( nrow = 2, ncol = 41)
-
-for (i in 0:40){
-  fair[1,i+1]=(0.46+0.001*i)
-  fair[2,i+1]= mean(replicate(100, Markov_Chains(100,0.46+0.001*i)))
+fair_probility=function(money,p0,increase){
+  expectation=mean(replicate(100, Markov_Chains(money,p0,increase))) # calulate the mean for the initial value, p0=0.48,increas=0.01
+  mid=p0 # inital middle possiblity =0.48
+  high=p0+0.02 # the upper boundry of the possiblity=0.48
+  low=p0-0.02 # the lower boundry of the possiblity=0.46
+  while (expectation>money*1.02 | expectation<money*0.98){ # if the mean value(expectaion) is outside the value we expect (0.98*money, 1.02*money), run the loop
+    if (expectation > money*1.02) { # if the expecataion is larger than we expect, means, the possiblit is higher than it needs to be, than use the middle value between mid and low to be the new possiblity
+      high <- mid
+      mid <- (low+high)/2
+    } else {# if the expecataion is smaller than we expect, means, the possiblit is lower than it needs to be, than use the middle value between mid and high to be the new possiblity
+      low <- mid
+      mid <- (low+high)/2
+    }
+      expectation=mean(replicate(100, Markov_Chains(money,mid,increase))) # run the markov_charins again to get a new expectation (mean of money) and compare it to what we expect to decide if run the loop again
+      print(paste("step before final result: ",c(mid,expectation))) # print each step
+  }
+  return(c(mid,expectation))
 }
-  fair
-  
+          
+b=fair_probility(500000,0.48,0.01)  
+b
 ```
     c. Repeat again, keeping the initial probability at 48%, but this time change the probability increment to a value different from 1%. Get the expected return after 100 repetitions. Keep changing this value until you have a return value that is as fair as you can make it. 
 
+
+
+ 
+ 
 ```{r}
-
-set.seed(1)
-fair=matrix( nrow = 2, ncol = 53)
-
-for (i in 0:52){
-  fair[1,i+1]=(0.48+0.01*i)
-  fair[2,i+1]= mean(replicate(100, Markov_Chains(100,0.46+0.01*i)))
+fair_increase=function(money,p0,increase){
+  expectation1=mean(replicate(100, Markov_Chains(money,p0,increase))) # use the inital value increase =0.01 to calculate a expectation
+  mid=increase # inital increase =0.01
+  high=1 # the upper boundry of increase=1
+  low=0 # the lower boundry of increase=0
+  while (expectation1>money*1.02 | expectation1<money*0.98){ # if the expectation is outside the range, then run the loop
+     if (expectation1 > money*1.02){  # if the expectation is larger than 2% ,which means the increase is higher than it needs to be, then we need a lower increase. Therefore we find the average of mid and low.
+      high <- mid
+      mid <- (low+high)/2
+    }
+  else{# if the expectation is smaller than or equal to 2% ,which means the increase is lower than it needs to be , then we need a higher increase. Therefore we find the average of mid and high.
+    low <- mid
+    mid <- (low+high)/2
+  }
+  expectation1=mean(replicate(100, Markov_Chains(money,p0,mid))) # calculate a new expectation
+  print(paste("step before final result: ",c(mid,expectation1))) # print each step
+  } 
+  return(c(mid,expectation1)) 
 }
-  fair
-  
-```    
+c=fair_increase(500000,0.48,0.01)  
+print(paste("fair result is",c))
+```
     
     
     
